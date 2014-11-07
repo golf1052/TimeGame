@@ -1,0 +1,33 @@
+﻿<Window x:Class="TimeGameLevelEditor.Editor"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="TimeGame Level Editor" Width="1850" Height="950">
+    <Grid>
+    	<Grid.RowDefinitions>
+    		<RowDefinition/>
+    		<RowDefinition Height="Auto"/>
+    	</Grid.RowDefinitions>
+    	<Grid.ColumnDefinitions>
+    		<ColumnDefinition/>
+    		<ColumnDefinition Width="Auto"/>
+    	</Grid.ColumnDefinitions>
+        <Canvas x:Name="canvas" Margin="0" Background="CornflowerBlue" MouseMove="canvas_MouseMove" MouseDown="canvas_MouseDown"/>
+        <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1" Margin="10,0">
+        	<Label Content="Modes" HorizontalContentAlignment="Center"/>
+        	<RadioButton x:Name="addRadioButton" Content="Add" HorizontalAlignment="Left" VerticalAlignment="Top" IsChecked="True" Checked="addRadioButton_Checked"/>
+        	<RadioButton x:Name="moveRadioButton" Content="Move" HorizontalAlignment="Left" VerticalAlignment="Top" Checked="moveRadioButton_Checked"/>
+        	<RadioButton x:Name="deleteRadioButton" Content="Delete" HorizontalAlignment="Left" VerticalAlignment="Top" Checked="deleteRadioButton_Checked"/>
+        </StackPanel>
+        <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Row="1" Orientation="Horizontal">
+        	<Label Content="Position"/>
+        	<Label Content="X:"/>
+        	<TextBox x:Name="xPosTextBox" Height="23" TextWrapping="Wrap" Width="120"/>
+        	<Label Content="Y:"/>
+        	<TextBox x:Name="yPosTextBox" Height="23" TextWrapping="Wrap" Width="120" Margin="0,0,50,0"/>
+        	<Label Content="Width:"/>
+        	<TextBox x:Name="widthTextBox" Height="23" TextWrapping="Wrap" Width="120"/>
+        	<Label Content="Height:"/>
+        	<TextBox x:Name="heightTextBox" Height="23" TextWrapping="Wrap" Width="120"/>
+        </StackPanel>
+    </Grid>
+</Window>
