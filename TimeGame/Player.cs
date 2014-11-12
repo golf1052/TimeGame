@@ -34,7 +34,7 @@ namespace TimeGame
             if (canFire)
             {
                 Bullet bullet = new Bullet(graphics);
-                bullet.speed = 1000;
+                bullet.speed = 100;
                 bullet.Fire(pos, rotation);
                 bullets.Add(bullet);
                 canFire = false;

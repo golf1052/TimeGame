@@ -13,10 +13,22 @@
     	</Grid.ColumnDefinitions>
         <Canvas x:Name="canvas" Margin="0" Background="CornflowerBlue" MouseMove="canvas_MouseMove" MouseDown="canvas_MouseDown"/>
         <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1" Margin="10,0">
+        	<Button x:Name="importButton" Content="Import" Margin="0,10,0,0" Click="importButton_Click"/>
+        	<Button x:Name="exportButton" Content="Export" Margin="0,10,0,0" Click="exportButton_Click"/>
+        	<Button x:Name="clearButton" Content="Clear" Margin="0,10,0,0" Click="clearButton_Click"/>
         	<Label Content="Modes" HorizontalContentAlignment="Center"/>
-        	<RadioButton x:Name="addRadioButton" Content="Add" HorizontalAlignment="Left" VerticalAlignment="Top" IsChecked="True" Checked="addRadioButton_Checked"/>
-        	<RadioButton x:Name="moveRadioButton" Content="Move" HorizontalAlignment="Left" VerticalAlignment="Top" Checked="moveRadioButton_Checked"/>
-        	<RadioButton x:Name="deleteRadioButton" Content="Delete" HorizontalAlignment="Left" VerticalAlignment="Top" Checked="deleteRadioButton_Checked"/>
+        	<RadioButton x:Name="addRadioButton" Content="Add" HorizontalAlignment="Center" VerticalAlignment="Top" IsChecked="True" Checked="addRadioButton_Checked"/>
+        	<RadioButton x:Name="moveRadioButton" Content="Move" HorizontalAlignment="Center" VerticalAlignment="Top" Checked="moveRadioButton_Checked"/>
+        	<RadioButton x:Name="deleteRadioButton" Content="Delete" HorizontalAlignment="Center" VerticalAlignment="Top" Checked="deleteRadioButton_Checked"/>
+        	<Label Content="Grid Size" HorizontalAlignment="Center"/>
+        	<TextBox x:Name="gridSizeTextBox" Height="23" TextWrapping="Wrap" Width="50" Text="5" LostFocus="gridSizeTextBox_LostFocus"/>
+        	<ListView x:Name="actionsListView" Width="100" Loaded="actionsListView_Loaded">
+        		<ListView.View>
+        			<GridView>
+        				<GridViewColumn/>
+        			</GridView>
+        		</ListView.View>
+        	</ListView>
         </StackPanel>
         <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Row="1" Orientation="Horizontal">
         	<Label Content="Position"/>
