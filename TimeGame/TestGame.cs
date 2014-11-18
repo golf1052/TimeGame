@@ -55,9 +55,9 @@ namespace TimeGame
             world = new World(graphics);
             mainGameTime = new GameTimeWrapper(SecondUpdate, this, 1.0m);
             world.AddTime(mainGameTime);
-            world.camera1.smoothPan = true;
-            world.camera1.panSmoothingType = Camera.SmoothingType.RecursiveLinear;
-            world.camera1.panSmoothingRate = 0.05f;
+            world.camera1.pan.active = true;
+            world.camera1.pan.smoothingType = Tweener<Vector2>.SmoothingType.RecursiveLinear;
+            world.camera1.pan.smoothingRate = 0.05f;
 
             base.Initialize();
         }
@@ -174,42 +174,42 @@ namespace TimeGame
                 previousGamePadState.Buttons.LeftStick == ButtonState.Released)
             {
                 world.camera1.focus = Camera.Focus.TopLeft;
-                world.camera1.focalPoint = Vector2.Zero;
+                world.camera1.pan.Value = Vector2.Zero;
                 cameraTarget = CameraTarget.None;
             }
             else if (gamePadState.Buttons.LeftShoulder == ButtonState.Pressed &&
                 previousGamePadState.Buttons.LeftShoulder == ButtonState.Released)
             {
                 world.camera1.focus = Camera.Focus.Center;
-                world.camera1.focalPoint = ida.pos;
+                world.camera1.pan.Value = ida.pos;
                 cameraTarget = CameraTarget.Player;
             }
             else if (gamePadState.Buttons.RightShoulder == ButtonState.Pressed &&
                 previousGamePadState.Buttons.RightShoulder == ButtonState.Released)
             {
                 world.camera1.focus = Camera.Focus.Center;
-                world.camera1.focalPoint = ai.pos;
+                world.camera1.pan.Value = ai.pos;
                 cameraTarget = CameraTarget.AI;
             }
             else if (gamePadState.Buttons.X == ButtonState.Pressed &&
                 previousGamePadState.Buttons.X == ButtonState.Released)
             {
                 world.camera1.focus = Camera.Focus.Center;
-                world.camera1.focalPoint = Vector2.Zero;
+                world.camera1.pan.Value = Vector2.Zero;
                 cameraTarget = CameraTarget.None;
             }
             else if (gamePadState.Buttons.Y == ButtonState.Pressed &&
                 previousGamePadState.Buttons.Y == ButtonState.Released)
             {
                 world.camera1.focus = Camera.Focus.Center;
-                world.camera1.focalPoint = new Vector2(graphics.GraphicsDevice.Viewport.Width, 0);
+                world.camera1.pan.Value = new Vector2(graphics.GraphicsDevice.Viewport.Width, 0);
                 cameraTarget = CameraTarget.None;
             }
             else if (gamePadState.Buttons.B == ButtonState.Pressed &&
                 previousGamePadState.Buttons.B == ButtonState.Released)
             {
                 world.camera1.focus = Camera.Focus.Center;
-                world.camera1.focalPoint = new Vector2(graphics.GraphicsDevice.Viewport.Width,
+                world.camera1.pan.Value = new Vector2(graphics.GraphicsDevice.Viewport.Width,
                     graphics.GraphicsDevice.Viewport.Height);
                 cameraTarget = CameraTarget.None;
             }
@@ -217,17 +217,17 @@ namespace TimeGame
                 previousGamePadState.Buttons.A == ButtonState.Released)
             {
                 world.camera1.focus = Camera.Focus.Center;
-                world.camera1.focalPoint = new Vector2(0, graphics.GraphicsDevice.Viewport.Height);
+                world.camera1.pan.Value = new Vector2(0, graphics.GraphicsDevice.Viewport.Height);
                 cameraTarget = CameraTarget.None;
             }
 
             if (cameraTarget == CameraTarget.AI)
             {
-                world.camera1.focalPoint = ai.pos;
+                world.camera1.pan.Value = ai.pos;
             }
             else if (cameraTarget == CameraTarget.Player)
             {
-                world.camera1.focalPoint = ida.pos;
+                world.camera1.pan.Value = ida.pos;
             }
 
             world.Update(gameTime);
@@ -324,7 +324,7 @@ namespace TimeGame
             ai.Update(gameTime, graphics);
             line.Aim(gamePadState, SpriteBase.ThumbStick.Right);
             //gameSpeedText.Update(gameTime, graphics.GraphicsDevice);
-
+            world.UpdateCurrentCamera(gameTime);
             previousKeyboardState = keyboardState;
             base.Update(gameTime);
         }
