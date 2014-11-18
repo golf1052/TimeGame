@@ -16,6 +16,7 @@ namespace TimeGame
         SpriteBatch spriteBatch;
         World world;
         KeyboardState previousKeyboardState = Keyboard.GetState();
+        GamePadState previousGamePadState = GamePad.GetState(PlayerIndex.One);
         OtherPlayer ida;
         PlayerAI ai;
         Sprite pixel;
@@ -28,12 +29,19 @@ namespace TimeGame
 
         TextItem gameSpeedText;
 
+        enum CameraTarget
+        {
+            Player,
+            AI,
+            None
+        }
+        CameraTarget cameraTarget = CameraTarget.None;
+
         public TestGame()
             : base()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-            world = new World(graphics);
         }
 
         /// <summary>
@@ -44,8 +52,12 @@ namespace TimeGame
         /// </summary>
         protected override void Initialize()
         {
+            world = new World(graphics);
             mainGameTime = new GameTimeWrapper(SecondUpdate, this, 1.0m);
             world.AddTime(mainGameTime);
+            world.camera1.smoothPan = true;
+            world.camera1.panSmoothingType = Camera.SmoothingType.RecursiveLinear;
+            world.camera1.panSmoothingRate = 0.05f;
 
             base.Initialize();
         }
@@ -58,6 +70,7 @@ namespace TimeGame
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
+            world.LoadSpriteBatch();
 
             ida = new OtherPlayer(new SpriteSheetInfo(160, 120), mainGameTime);
             ida.animations["idle"] = ida.animations.AddSpriteSheet(Content.Load<Texture2D>("stand"), 8, 100, true);
@@ -96,7 +109,7 @@ namespace TimeGame
             pixel.drawRect = new Rectangle(0, 350 + (ida.tex.Height / 2) - 9, graphics.PreferredBackBufferWidth, 0);
             pixel.drawRect.Height = graphics.PreferredBackBufferHeight - pixel.drawRect.Y;
 
-            line = new Line(graphics, new Vector2(100, 100), new Vector2(500, 300), 1);
+            line = new Line(graphics, Line.Type.Point, new Vector2(100, 100), new Vector2(500, 300), 1);
 
             poly = new Polygon(graphics);
             poly.AddSide(new Vector2(150, 150), new Vector2(150, 350));
@@ -128,6 +141,7 @@ namespace TimeGame
         protected override void Update(GameTime gameTime)
         {
             KeyboardState keyboardState = Keyboard.GetState();
+            GamePadState gamePadState = GamePad.GetState(PlayerIndex.One);
             if (keyboardState.IsKeyDown(Keys.OemMinus))
             {
                 mainGameTime.GameSpeed -= 0.01m;
@@ -156,8 +170,68 @@ namespace TimeGame
             }
             gameSpeedText.text = "Current Game Speed: " + mainGameTime.GameSpeed.ToString("#.0000");
             gameSpeedText.pos = new Vector2(graphics.GraphicsDevice.Viewport.Width / 2, 50);
+            if (gamePadState.Buttons.LeftStick == ButtonState.Pressed &&
+                previousGamePadState.Buttons.LeftStick == ButtonState.Released)
+            {
+                world.camera1.focus = Camera.Focus.TopLeft;
+                world.camera1.focalPoint = Vector2.Zero;
+                cameraTarget = CameraTarget.None;
+            }
+            else if (gamePadState.Buttons.LeftShoulder == ButtonState.Pressed &&
+                previousGamePadState.Buttons.LeftShoulder == ButtonState.Released)
+            {
+                world.camera1.focus = Camera.Focus.Center;
+                world.camera1.focalPoint = ida.pos;
+                cameraTarget = CameraTarget.Player;
+            }
+            else if (gamePadState.Buttons.RightShoulder == ButtonState.Pressed &&
+                previousGamePadState.Buttons.RightShoulder == ButtonState.Released)
+            {
+                world.camera1.focus = Camera.Focus.Center;
+                world.camera1.focalPoint = ai.pos;
+                cameraTarget = CameraTarget.AI;
+            }
+            else if (gamePadState.Buttons.X == ButtonState.Pressed &&
+                previousGamePadState.Buttons.X == ButtonState.Released)
+            {
+                world.camera1.focus = Camera.Focus.Center;
+                world.camera1.focalPoint = Vector2.Zero;
+                cameraTarget = CameraTarget.None;
+            }
+            else if (gamePadState.Buttons.Y == ButtonState.Pressed &&
+                previousGamePadState.Buttons.Y == ButtonState.Released)
+            {
+                world.camera1.focus = Camera.Focus.Center;
+                world.camera1.focalPoint = new Vector2(graphics.GraphicsDevice.Viewport.Width, 0);
+                cameraTarget = CameraTarget.None;
+            }
+            else if (gamePadState.Buttons.B == ButtonState.Pressed &&
+                previousGamePadState.Buttons.B == ButtonState.Released)
+            {
+                world.camera1.focus = Camera.Focus.Center;
+                world.camera1.focalPoint = new Vector2(graphics.GraphicsDevice.Viewport.Width,
+                    graphics.GraphicsDevice.Viewport.Height);
+                cameraTarget = CameraTarget.None;
+            }
+            else if (gamePadState.Buttons.A == ButtonState.Pressed &&
+                previousGamePadState.Buttons.A == ButtonState.Released)
+            {
+                world.camera1.focus = Camera.Focus.Center;
+                world.camera1.focalPoint = new Vector2(0, graphics.GraphicsDevice.Viewport.Height);
+                cameraTarget = CameraTarget.None;
+            }
+
+            if (cameraTarget == CameraTarget.AI)
+            {
+                world.camera1.focalPoint = ai.pos;
+            }
+            else if (cameraTarget == CameraTarget.Player)
+            {
+                world.camera1.focalPoint = ida.pos;
+            }
 
             world.Update(gameTime);
+            previousGamePadState = gamePadState;
         }
 
         void SecondUpdate(GameTimeWrapper gameTime)
@@ -246,8 +320,8 @@ namespace TimeGame
 
             emitter.Fire();
             emitter.Update(gameTime);
-            ida.Update(gameTime, graphics.GraphicsDevice);
-            ai.Update(gameTime, graphics.GraphicsDevice);
+            ida.Update(gameTime, graphics);
+            ai.Update(gameTime, graphics);
             line.Aim(gamePadState, SpriteBase.ThumbStick.Right);
             //gameSpeedText.Update(gameTime, graphics.GraphicsDevice);
 
@@ -263,16 +337,25 @@ namespace TimeGame
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            spriteBatch.Begin();
-            pixel.DrawRect(spriteBatch);
-            ai.Draw(spriteBatch);
-            ida.Draw(spriteBatch);
-            gameSpeedText.Draw(spriteBatch);
-            //line.Draw(spriteBatch);
-            //square.Draw(spriteBatch);
-            //poly.Draw(spriteBatch);
-            emitter.Draw(spriteBatch);
-            spriteBatch.End();
+            world.BeginDraw();
+            world.Draw(pixel.DrawRect);
+            world.Draw(ai.Draw);
+            world.Draw(ida.Draw);
+            world.Draw(gameSpeedText.Draw);
+            world.Draw(emitter.Draw);
+            world.EndDraw();
+
+            //spriteBatch.Begin();
+            //world.Draw(pixel.DrawRect);
+            //pixel.DrawRect(spriteBatch);
+            //ai.Draw(spriteBatch);
+            //ida.Draw(spriteBatch);
+            //gameSpeedText.Draw(spriteBatch);
+            ////line.Draw(spriteBatch);
+            ////square.Draw(spriteBatch);
+            ////poly.Draw(spriteBatch);
+            //emitter.Draw(spriteBatch);
+            //spriteBatch.End();
 
             base.Draw(gameTime);
         }

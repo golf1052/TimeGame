@@ -21,7 +21,9 @@ namespace TimeGame
 
         TextItem gameSpeedText;
 
-        Player testGuy;
+        Map map;
+
+        Player player;
         GameTimeWrapper mainGameTime;
         World world;
 
@@ -57,11 +59,14 @@ namespace TimeGame
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            testGuy = new Player(Content.Load<Texture2D>("testguy"), graphics);
-            testGuy.pos = new Vector2(graphics.GraphicsDevice.Viewport.Width / 2, graphics.GraphicsDevice.Viewport.Height / 2);
+            player = new Player(Content.Load<Texture2D>("testguy"), graphics);
+            player.pos = new Vector2(graphics.GraphicsDevice.Viewport.Width / 2, graphics.GraphicsDevice.Viewport.Height / 2);
 
             gameSpeedText = new TextItem(Content.Load<SpriteFont>("DebugFont"), "Game speed: " + (float)mainGameTime.GameSpeed);
             DebugText.debugTexts.Add(gameSpeedText);
+
+            map = new Map(graphics);
+            map.LoadMap(Content.RootDirectory + "\\testmap.json");
         }
 
         /// <summary>
@@ -116,25 +121,27 @@ namespace TimeGame
             MouseState mouseState = Mouse.GetState();
             GamePadState gamePadState = GamePad.GetState(PlayerIndex.One);
 
-            // Keyboard + mouse control
-            testGuy.Move(keyboardState, 5.0f * (float)gameTime.GameSpeed, SpriteBase.MovementDirection.Up, Keys.W);
-            testGuy.Move(keyboardState, 5.0f * (float)gameTime.GameSpeed, SpriteBase.MovementDirection.Down, Keys.S);
-            testGuy.Move(keyboardState, 5.0f * (float)gameTime.GameSpeed, SpriteBase.MovementDirection.Left, Keys.A);
-            testGuy.Move(keyboardState, 5.0f * (float)gameTime.GameSpeed, SpriteBase.MovementDirection.Right, Keys.D);
-            //testGuy.Aim(mouseState);
-            if (mouseState.LeftButton == ButtonState.Pressed)
-            {
-                testGuy.Fire();
-            }
+            //// Keyboard + mouse control
+            //player.Move(keyboardState, 5.0f * (float)gameTime.GameSpeed, SpriteBase.MovementDirection.Up, Keys.W);
+            //player.Move(keyboardState, 5.0f * (float)gameTime.GameSpeed, SpriteBase.MovementDirection.Down, Keys.S);
+            //player.Move(keyboardState, 5.0f * (float)gameTime.GameSpeed, SpriteBase.MovementDirection.Left, Keys.A);
+            //player.Move(keyboardState, 5.0f * (float)gameTime.GameSpeed, SpriteBase.MovementDirection.Right, Keys.D);
+            ////testGuy.Aim(mouseState);
+            //if (mouseState.LeftButton == ButtonState.Pressed)
+            //{
+            //    player.Fire();
+            //}
 
-            // Gamepad control
-            testGuy.pos.X += gamePadState.ThumbSticks.Left.X * (5.0f * (float)gameTime.GameSpeed);
-            testGuy.pos.Y -= gamePadState.ThumbSticks.Left.Y * (5.0f * (float)gameTime.GameSpeed);
-            testGuy.Aim(gamePadState, SpriteBase.ThumbStick.Right);
-            if (gamePadState.Triggers.Right >= 0.5)
-            {
-                testGuy.Fire();
-            }
+            //// Gamepad control
+            //player.pos.X += gamePadState.ThumbSticks.Left.X * (5.0f * (float)gameTime.GameSpeed);
+            //player.pos.Y -= gamePadState.ThumbSticks.Left.Y * (5.0f * (float)gameTime.GameSpeed);
+            //player.Aim(gamePadState, SpriteBase.ThumbStick.Right);
+            //if (gamePadState.Triggers.Right >= 0.5)
+            //{
+            //    player.Fire();
+            //}
+
+            player.Control(gameTime, map);
 
             if (gamePadState.Buttons.Y == ButtonState.Pressed)
             {
@@ -157,7 +164,8 @@ namespace TimeGame
                 DebugText.pos = new Vector2(graphics.GraphicsDevice.Viewport.Width, graphics.GraphicsDevice.Viewport.Height);
             }
 
-            testGuy.Update(gameTime, graphics.GraphicsDevice);
+            //player.CheckCollision(map);
+            player.Update(gameTime, graphics);
 
             previousKeyboardState = keyboardState;
             previousMouseState = mouseState;
@@ -174,7 +182,8 @@ namespace TimeGame
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             spriteBatch.Begin();
-            testGuy.Draw(spriteBatch);
+            map.Draw(spriteBatch);
+            player.Draw(spriteBatch);
 
             DebugText.Draw(spriteBatch);
             spriteBatch.End();

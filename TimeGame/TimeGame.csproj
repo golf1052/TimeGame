@@ -35,9 +35,11 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Block.cs" />
     <Compile Include="Bullet.cs" />
     <Compile Include="Emitter.cs" />
     <Compile Include="Game1.cs" />
+    <Compile Include="Map.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="TestGame.cs" />
     <Compile Include="OtherPlayer.cs" />
@@ -48,6 +50,10 @@
   <ItemGroup>
     <Reference Include="MonoGame.Framework">
       <HintPath>$(MSBuildProgramFiles32)\MonoGame\v3.0\Assemblies\Windows\MonoGame.Framework.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Newtonsoft.Json.6.0.6\lib\net40\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
@@ -67,6 +73,9 @@
       <Project>{e2ba561d-2860-4fad-a957-eeb72baaf570}</Project>
       <Name>TimeGameContent</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

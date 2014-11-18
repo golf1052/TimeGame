@@ -80,7 +80,7 @@ namespace TimeGame
             SetSlashTime();
         }
 
-        public override void Update(GameTimeWrapper gameTime, GraphicsDevice graphicsDevice)
+        public override void Update(GameTimeWrapper gameTime, GraphicsDeviceManager graphics)
         {
             if (slashMeter != 0)
             {
@@ -99,7 +99,7 @@ namespace TimeGame
                 if (pos.Y <= startingHeight - maxHeight)
                 {
                     hitApex = true;
-                    Debug.WriteLine("Jump Height: " + (startingHeight - pos.Y));
+                    //Debug.WriteLine("Jump Height: " + (startingHeight - pos.Y));
                 }
 
                 if (!hitApex)
@@ -118,7 +118,7 @@ namespace TimeGame
                 }
             }
 
-            base.Update(gameTime, graphicsDevice);
+            base.Update(gameTime, graphics);
         }
 
         public override void Draw(SpriteBatch spriteBatch)

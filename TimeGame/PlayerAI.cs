@@ -5,6 +5,7 @@ using System.Text;
 using GLX;
 using System.Diagnostics;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework;
 
 namespace TimeGame
 {
@@ -22,7 +23,7 @@ namespace TimeGame
         {
         }
 
-        public override void Update(GameTimeWrapper gameTime, GraphicsDevice graphicsDevice)
+        public override void Update(GameTimeWrapper gameTime, GraphicsDeviceManager graphics)
         {
             if (pos.X < leftBound)
             {
@@ -34,7 +35,7 @@ namespace TimeGame
                 waitTime = TimeSpan.FromSeconds(1);
                 vel.X = 0;
                 pos.X = leftBound;
-                Debug.WriteLine("");
+                //Debug.WriteLine("");
             }
 
             if (pos.X > rightBound)
@@ -47,7 +48,7 @@ namespace TimeGame
                 waitTime = TimeSpan.FromSeconds(1);
                 vel.X = 0;
                 pos.X = rightBound;
-                Debug.WriteLine("");
+                //Debug.WriteLine("");
             }
 
             if (waiting)
@@ -114,11 +115,11 @@ namespace TimeGame
                 if (animations.currentFrame == 0 && previousFrame != 0)
                 {
                     animationsDone++;
-                    Debug.WriteLine(animationsDone + " animations done in " + distanceCovered + " distance");
+                    //Debug.WriteLine(animationsDone + " animations done in " + distanceCovered + " distance");
                 }
                 previousFrame = animations.currentFrame;
             }
-            base.Update(gameTime, graphicsDevice);
+            base.Update(gameTime, graphics);
         }
     }
 }
