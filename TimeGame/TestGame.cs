@@ -55,8 +55,8 @@ namespace TimeGame
             world = new World(graphics);
             mainGameTime = new GameTimeWrapper(SecondUpdate, this, 1.0m);
             world.AddTime(mainGameTime);
-            world.camera1.pan.active = true;
-            world.camera1.pan.smoothingType = Tweener<Vector2>.SmoothingType.RecursiveLinear;
+            world.camera1.pan.smoothingActive = true;
+            world.camera1.pan.smoothingType = TweenerBase.SmoothingType.RecursiveLinear;
             world.camera1.pan.smoothingRate = 0.05f;
 
             base.Initialize();
