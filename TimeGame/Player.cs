@@ -101,6 +101,8 @@ namespace TimeGame
             {
                 List<Tuple<Vector2, Vector2>> wallPoints = new List<Tuple<Vector2,Vector2>>();
                 wallPoints.Add(new Tuple<Vector2,Vector2>(Vector2.Zero, Vector2.Zero));
+                Vector2 point1 = Vector2.Zero;
+                Vector2 point2 = Vector2.Zero;
                 for (int i = 0; i < 4; i++)
                 {
                     float closestWall = float.MaxValue;
@@ -110,14 +112,20 @@ namespace TimeGame
                         if (Math.Abs(currentPos.Y - block.drawRect.Top) < closestWall)
                         {
                             closestWall = Math.Abs(currentPos.Y - block.drawRect.Top);
-                            wallPoints[0] = new Tuple<Vector2,Vector2>(new Vector2(block.drawRect.Left, block.drawRect.Top),
-                                new Vector2(block.drawRect.Right, block.drawRect.Top));
+                            point1 = new Vector2(block.drawRect.Left, block.drawRect.Top);
+                            point2 = new Vector2(block.drawRect.Right, block.drawRect.Top);
                         }
-                        else if (Math.Abs(currentPos.Y - block.drawRect.Top) == closestWall)
-                        {
-                            wallPoints.Add(new Tuple<Vector2,Vector2>(new Vector2(block.drawRect.Left, block.drawRect.Top),
-                                new Vector2(block.drawRect.Right, block.drawRect.Top)));
-                        }
+                        //if (Math.Abs(currentPos.Y - block.drawRect.Top) < closestWall)
+                        //{
+                        //    closestWall = Math.Abs(currentPos.Y - block.drawRect.Top);
+                        //    wallPoints[0] = new Tuple<Vector2,Vector2>(new Vector2(block.drawRect.Left, block.drawRect.Top),
+                        //        new Vector2(block.drawRect.Right, block.drawRect.Top));
+                        //}
+                        //else if (Math.Abs(currentPos.Y - block.drawRect.Top) == closestWall)
+                        //{
+                        //    wallPoints.Add(new Tuple<Vector2,Vector2>(new Vector2(block.drawRect.Left, block.drawRect.Top),
+                        //        new Vector2(block.drawRect.Right, block.drawRect.Top)));
+                        //}
                     }
                     else if (i == 1)
                     {
@@ -125,8 +133,8 @@ namespace TimeGame
                         if (Math.Abs(currentPos.X - block.drawRect.Left) < closestWall)
                         {
                             closestWall = Math.Abs(currentPos.X - block.drawRect.Left);
-                            //point1 = new Vector2(block.drawRect.Left, block.drawRect.Top);
-                            //point2 = new Vector2(block.drawRect.Left, block.drawRect.Bottom);
+                            point1 = new Vector2(block.drawRect.Left, block.drawRect.Top);
+                            point2 = new Vector2(block.drawRect.Left, block.drawRect.Bottom);
                         }
                     }
                     else if (i == 2)
@@ -135,8 +143,8 @@ namespace TimeGame
                         if (Math.Abs(currentPos.Y - block.drawRect.Bottom) < closestWall)
                         {
                             closestWall = Math.Abs(currentPos.Y - block.drawRect.Bottom);
-                            //point1 = new Vector2(block.drawRect.Left, block.drawRect.Bottom);
-                            //point2 = new Vector2(block.drawRect.Right, block.drawRect.Bottom);
+                            point1 = new Vector2(block.drawRect.Left, block.drawRect.Bottom);
+                            point2 = new Vector2(block.drawRect.Right, block.drawRect.Bottom);
                         }
                     }
                     else if (i == 3)
@@ -145,8 +153,8 @@ namespace TimeGame
                         if (Math.Abs(currentPos.X - block.drawRect.Right) < closestWall)
                         {
                             closestWall = Math.Abs(currentPos.X - block.drawRect.Right);
-                            //point1 = new Vector2(block.drawRect.Right, block.drawRect.Top);
-                            //point2 = new Vector2(block.drawRect.Right, block.drawRect.Bottom);
+                            point1 = new Vector2(block.drawRect.Right, block.drawRect.Top);
+                            point2 = new Vector2(block.drawRect.Right, block.drawRect.Bottom);
                         }
                     }
                 }
@@ -155,7 +163,9 @@ namespace TimeGame
                 Vector2 intersectionPoint = new Vector2();
                 if (block.drawRect.Contains(futurePos))
                 {
-                    //intersectionPoint = HelperMethods.Intersection(point1, point2, point3, point4);
+                    intersectionPoint = HelperMethods.Intersection(point1, point2, point3, point4);
+                    pos = intersectionPoint;
+                    intersection = true;
                 }
                 else
                 {

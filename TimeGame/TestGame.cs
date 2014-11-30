@@ -56,7 +56,7 @@ namespace TimeGame
             mainGameTime = new GameTimeWrapper(SecondUpdate, this, 1.0m);
             world.AddTime(mainGameTime);
             world.camera1.pan.smoothingActive = true;
-            world.camera1.pan.smoothingType = TweenerBase.SmoothingType.RecursiveLinear;
+            world.camera1.pan.smoothingType = TweenerBase.SmoothingType.Linear;
             world.camera1.pan.smoothingRate = 0.05f;
 
             base.Initialize();
@@ -90,14 +90,14 @@ namespace TimeGame
             ida.animations.SetFrameAction("slash3", 14, ida.SetGround);
             ida.animations.SetReverseFrameAction("slash3", 0, ida.SetGround);
             ida.animations.SetFrameAction("slash3", 14, ida.SetSlashMeter);
-            ida.Ready(graphics.GraphicsDevice);
+            ida.Ready(graphics);
             ida.animations.currentAnimation = "idle";
             ida.pos = new Vector2(300, 350);
 
             ai = new PlayerAI(new SpriteSheetInfo(160, 120), mainGameTime);
             ai.animations["idle"] = ida.animations.AddSpriteSheet(Content.Load<Texture2D>("stand"), 8, 100, true);
             ai.animations["run"] = ida.animations.AddSpriteSheet(Content.Load<Texture2D>("run"), 10, 100, true);
-            ai.Ready(graphics.GraphicsDevice);
+            ai.Ready(graphics);
             ai.animations.currentAnimation = "idle";
             ai.pos = new Vector2(100, 350);
 
