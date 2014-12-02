@@ -13,7 +13,6 @@ namespace TimeGame
     public class Game1 : Game
     {
         GraphicsDeviceManager graphics;
-        SpriteBatch spriteBatch;
 
         KeyboardState previousKeyboardState = Keyboard.GetState();
         MouseState previousMouseState = Mouse.GetState();
@@ -21,11 +20,11 @@ namespace TimeGame
 
         TextItem gameSpeedText;
 
-        Map map;
-
         Player player;
         GameTimeWrapper mainGameTime;
         World world;
+
+        EnemyHandler enemyHandler;
 
         public Game1()
             : base()
@@ -33,6 +32,11 @@ namespace TimeGame
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             this.IsMouseVisible = true;
+            System.Windows.Forms.Screen screen = System.Windows.Forms.Screen.AllScreens[0];
+            Window.IsBorderless = true;
+            Window.Position = new Point(screen.Bounds.X, screen.Bounds.Y);
+            graphics.PreferredBackBufferWidth = screen.Bounds.Width;
+            graphics.PreferredBackBufferHeight = screen.Bounds.Height;
         }
 
         /// <summary>
@@ -46,6 +50,10 @@ namespace TimeGame
             world = new World(graphics);
             mainGameTime = new GameTimeWrapper(MainUpdate, this, 1.0m);
             world.AddTime(mainGameTime);
+            world.camera1.focus = Camera.Focus.Center;
+            world.camera1.pan.smoothingActive = true;
+            world.camera1.pan.smoothingType = TweenerBase.SmoothingType.RecursiveLinear;
+            world.camera1.pan.smoothingRate = 0.1f;
 
             DebugText.Initialize(Vector2.Zero, DebugText.Corner.TopLeft, 0);
             base.Initialize();
@@ -57,16 +65,14 @@ namespace TimeGame
         /// </summary>
         protected override void LoadContent()
         {
-            // Create a new SpriteBatch, which can be used to draw textures.
-            spriteBatch = new SpriteBatch(GraphicsDevice);
+            world.LoadSpriteBatch();
             player = new Player(Content.Load<Texture2D>("testguy"), graphics);
             player.pos = new Vector2(graphics.GraphicsDevice.Viewport.Width / 2, graphics.GraphicsDevice.Viewport.Height / 2);
 
+            enemyHandler = new EnemyHandler(Content.Load<Texture2D>("testenemy"));
+
             gameSpeedText = new TextItem(Content.Load<SpriteFont>("DebugFont"), "Game speed: " + (float)mainGameTime.GameSpeed);
             DebugText.debugTexts.Add(gameSpeedText);
-
-            map = new Map(graphics);
-            map.LoadMap(Content.RootDirectory + "\\testmap.json");
         }
 
         /// <summary>
@@ -121,52 +127,14 @@ namespace TimeGame
             MouseState mouseState = Mouse.GetState();
             GamePadState gamePadState = GamePad.GetState(PlayerIndex.One);
 
-            //// Keyboard + mouse control
-            //player.Move(keyboardState, 5.0f * (float)gameTime.GameSpeed, SpriteBase.MovementDirection.Up, Keys.W);
-            //player.Move(keyboardState, 5.0f * (float)gameTime.GameSpeed, SpriteBase.MovementDirection.Down, Keys.S);
-            //player.Move(keyboardState, 5.0f * (float)gameTime.GameSpeed, SpriteBase.MovementDirection.Left, Keys.A);
-            //player.Move(keyboardState, 5.0f * (float)gameTime.GameSpeed, SpriteBase.MovementDirection.Right, Keys.D);
-            ////testGuy.Aim(mouseState);
-            //if (mouseState.LeftButton == ButtonState.Pressed)
-            //{
-            //    player.Fire();
-            //}
+            player.Control(gameTime);
 
-            //// Gamepad control
-            //player.pos.X += gamePadState.ThumbSticks.Left.X * (5.0f * (float)gameTime.GameSpeed);
-            //player.pos.Y -= gamePadState.ThumbSticks.Left.Y * (5.0f * (float)gameTime.GameSpeed);
-            //player.Aim(gamePadState, SpriteBase.ThumbStick.Right);
-            //if (gamePadState.Triggers.Right >= 0.5)
-            //{
-            //    player.Fire();
-            //}
+            enemyHandler.Update(player, gameTime, graphics);
+            player.Update(gameTime, graphics, world.camera1);
 
-            player.Control(gameTime, map);
-
-            if (gamePadState.Buttons.Y == ButtonState.Pressed)
-            {
-                DebugText.corner = DebugText.Corner.TopLeft;
-                DebugText.pos = Vector2.Zero;
-            }
-            else if (gamePadState.Buttons.X == ButtonState.Pressed)
-            {
-                DebugText.corner = DebugText.Corner.BottomLeft;
-                DebugText.pos = new Vector2(0, graphics.GraphicsDevice.Viewport.Height);
-            }
-            else if (gamePadState.Buttons.B == ButtonState.Pressed)
-            {
-                DebugText.corner = DebugText.Corner.TopRight;
-                DebugText.pos = new Vector2(graphics.GraphicsDevice.Viewport.Width, 0);
-            }
-            else if (gamePadState.Buttons.A == ButtonState.Pressed)
-            {
-                DebugText.corner = DebugText.Corner.BottomRight;
-                DebugText.pos = new Vector2(graphics.GraphicsDevice.Viewport.Width, graphics.GraphicsDevice.Viewport.Height);
-            }
-
-            //player.CheckCollision(map);
-            player.Update(gameTime, graphics);
-
+            world.camera1.pan.Value = player.pos;
+            world.UpdateCurrentCamera(gameTime);
+            DebugText.pos = new Vector2(world.camera1.pan.Value.X - graphics.GraphicsDevice.Viewport.Width / 2, world.camera1.pan.Value.Y - graphics.GraphicsDevice.Viewport.Height / 2);
             previousKeyboardState = keyboardState;
             previousMouseState = mouseState;
             previousGamePadState = gamePadState;
@@ -181,12 +149,11 @@ namespace TimeGame
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            spriteBatch.Begin();
-            map.Draw(spriteBatch);
-            player.Draw(spriteBatch);
-
-            DebugText.Draw(spriteBatch);
-            spriteBatch.End();
+            world.BeginDraw();
+            world.Draw(enemyHandler.Draw);
+            world.Draw(player.Draw);
+            world.Draw(DebugText.Draw);
+            world.EndDraw();
 
             base.Draw(gameTime);
         }

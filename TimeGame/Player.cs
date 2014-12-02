@@ -61,7 +61,7 @@ namespace TimeGame
             }
         }
 
-        public void Control(GameTimeWrapper gameTime, Map map)
+        public void Control(GameTimeWrapper gameTime)
         {
             KeyboardState keyboardState = Keyboard.GetState();
             MouseState mouseState = Mouse.GetState();
@@ -93,92 +93,19 @@ namespace TimeGame
             {
                 futurePos.X += gamePadState.ThumbSticks.Left.X * (5.0f * (float)gameTime.GameSpeed);
                 futurePos.Y -= gamePadState.ThumbSticks.Left.Y * (5.0f * (float)gameTime.GameSpeed);
+                if (gamePadState.Triggers.Right > 0.5f)
+                {
+                    Fire();
+                }
             }
+            pos = futurePos;
+            Aim(gamePadState, ThumbStick.Right);
 
             bool intersection = false;
             debugLines.Clear();
-            foreach (Block block in map.blocks)
-            {
-                List<Tuple<Vector2, Vector2>> wallPoints = new List<Tuple<Vector2,Vector2>>();
-                wallPoints.Add(new Tuple<Vector2,Vector2>(Vector2.Zero, Vector2.Zero));
-                Vector2 point1 = Vector2.Zero;
-                Vector2 point2 = Vector2.Zero;
-                for (int i = 0; i < 4; i++)
-                {
-                    float closestWall = float.MaxValue;
-                    if (i == 0)
-                    {
-                        // top edge
-                        if (Math.Abs(currentPos.Y - block.drawRect.Top) < closestWall)
-                        {
-                            closestWall = Math.Abs(currentPos.Y - block.drawRect.Top);
-                            point1 = new Vector2(block.drawRect.Left, block.drawRect.Top);
-                            point2 = new Vector2(block.drawRect.Right, block.drawRect.Top);
-                        }
-                        //if (Math.Abs(currentPos.Y - block.drawRect.Top) < closestWall)
-                        //{
-                        //    closestWall = Math.Abs(currentPos.Y - block.drawRect.Top);
-                        //    wallPoints[0] = new Tuple<Vector2,Vector2>(new Vector2(block.drawRect.Left, block.drawRect.Top),
-                        //        new Vector2(block.drawRect.Right, block.drawRect.Top));
-                        //}
-                        //else if (Math.Abs(currentPos.Y - block.drawRect.Top) == closestWall)
-                        //{
-                        //    wallPoints.Add(new Tuple<Vector2,Vector2>(new Vector2(block.drawRect.Left, block.drawRect.Top),
-                        //        new Vector2(block.drawRect.Right, block.drawRect.Top)));
-                        //}
-                    }
-                    else if (i == 1)
-                    {
-                        // left edge
-                        if (Math.Abs(currentPos.X - block.drawRect.Left) < closestWall)
-                        {
-                            closestWall = Math.Abs(currentPos.X - block.drawRect.Left);
-                            point1 = new Vector2(block.drawRect.Left, block.drawRect.Top);
-                            point2 = new Vector2(block.drawRect.Left, block.drawRect.Bottom);
-                        }
-                    }
-                    else if (i == 2)
-                    {
-                        // bottom edge
-                        if (Math.Abs(currentPos.Y - block.drawRect.Bottom) < closestWall)
-                        {
-                            closestWall = Math.Abs(currentPos.Y - block.drawRect.Bottom);
-                            point1 = new Vector2(block.drawRect.Left, block.drawRect.Bottom);
-                            point2 = new Vector2(block.drawRect.Right, block.drawRect.Bottom);
-                        }
-                    }
-                    else if (i == 3)
-                    {
-                        // right edge
-                        if (Math.Abs(currentPos.X - block.drawRect.Right) < closestWall)
-                        {
-                            closestWall = Math.Abs(currentPos.X - block.drawRect.Right);
-                            point1 = new Vector2(block.drawRect.Right, block.drawRect.Top);
-                            point2 = new Vector2(block.drawRect.Right, block.drawRect.Bottom);
-                        }
-                    }
-                }
-                Vector2 point3 = currentPos;
-                Vector2 point4 = futurePos;
-                Vector2 intersectionPoint = new Vector2();
-                if (block.drawRect.Contains(futurePos))
-                {
-                    intersectionPoint = HelperMethods.Intersection(point1, point2, point3, point4);
-                    pos = intersectionPoint;
-                    intersection = true;
-                }
-                else
-                {
-                    Vector2 movementDirection = Vector2.Normalize(point4 - point3);
-                }
-            }
-            if (!intersection)
-            {
-                pos = futurePos;
-            }
         }
 
-        public override void Update(GameTimeWrapper gameTime, GraphicsDeviceManager graphics)
+        public void Update(GameTimeWrapper gameTime, GraphicsDeviceManager graphics, Camera camera)
         {
             if (!canFire)
             {
@@ -193,26 +120,16 @@ namespace TimeGame
             {
                 if (bullet.visible)
                 {
-                    if (!graphics.GraphicsDevice.Viewport.Bounds.Contains(bullet.point1) &&
-                        !graphics.GraphicsDevice.Viewport.Bounds.Contains(bullet.point2))
+                    if (!camera.viewport.Bounds.Contains(bullet.point1) &&
+                        !camera.viewport.Bounds.Contains(bullet.point2))
                     {
                         bullet.visible = false;
                         break;
                     }
-
                     bullet.Update(gameTime);
                 }
             }
             base.Update(gameTime, graphics);
-        }
-
-        public void CheckCollision(Map map)
-        {
-            debugLines.Clear();
-            foreach (Block block in map.blocks)
-            {
-                
-            }
         }
 
         public override void Draw(SpriteBatch spriteBatch)
