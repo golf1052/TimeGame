@@ -10,7 +10,7 @@ namespace TimeGame
     public class Player : Sprite
     {
         public bool alive;
-        List<Bullet> bullets;
+        public List<Bullet> bullets;
         TimeSpan timeBetweenShots;
         bool canFire;
 
@@ -69,6 +69,15 @@ namespace TimeGame
 
             Vector2 currentPos = pos;
             Vector2 futurePos = pos;
+
+            if (gamePadState.IsConnected)
+            {
+                controlScheme = ControlScheme.GamePad;
+            }
+            else
+            {
+                controlScheme = ControlScheme.KeyboardMouse;
+            }
 
             if (controlScheme == ControlScheme.KeyboardMouse)
             {
