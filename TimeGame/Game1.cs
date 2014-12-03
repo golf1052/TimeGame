@@ -69,7 +69,7 @@ namespace TimeGame
             player = new Player(Content.Load<Texture2D>("testguy"), graphics);
             player.pos = new Vector2(graphics.GraphicsDevice.Viewport.Width / 2, graphics.GraphicsDevice.Viewport.Height / 2);
 
-            enemyHandler = new EnemyHandler(Content.Load<Texture2D>("testenemy"));
+            enemyHandler = new EnemyHandler(Content.Load<Texture2D>("testenemy"), graphics);
 
             gameSpeedText = new TextItem(Content.Load<SpriteFont>("DebugFont"), "Game speed: " + (float)mainGameTime.GameSpeed);
             DebugText.debugTexts.Add(gameSpeedText);

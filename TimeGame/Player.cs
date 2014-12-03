@@ -16,7 +16,7 @@ namespace TimeGame
 
         GraphicsDeviceManager graphics;
 
-        int shotDelay = 100;
+        int shotDelay = 120;
 
         List<Line> debugLines;
 

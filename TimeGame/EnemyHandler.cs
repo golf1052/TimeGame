@@ -12,12 +12,12 @@ namespace TimeGame
     {
         public List<Enemy> enemies;
 
-        public EnemyHandler(Texture2D enemyTex)
+        public EnemyHandler(Texture2D enemyTex, GraphicsDeviceManager graphics)
         {
             enemies = new List<Enemy>();
             for (int i = 0; i < 25; i++)
             {
-                enemies.Add(new Enemy(enemyTex));
+                enemies.Add(new Enemy(enemyTex, graphics));
             }
         }
 

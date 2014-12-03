@@ -12,10 +12,13 @@ namespace TimeGame
     {
         public float speed;
         Vector2 originalVel;
+        public bool shouldBeDead;
+        bool shouldBeDeadBuffer;
 
         public Bullet(GraphicsDeviceManager graphics) : base(graphics)
         {
-
+            shouldBeDead = false;
+            shouldBeDeadBuffer = false;
         }
 
         public void Fire(Vector2 startingPosition, Vector2 targetPosition)
@@ -45,6 +48,11 @@ namespace TimeGame
                 vel *= (float)distanceTraveled;
                 point2 = point1;
                 point1 += vel;
+                if (shouldBeDead && shouldBeDeadBuffer)
+                {
+                    visible = false;
+                }
+                shouldBeDeadBuffer = shouldBeDead;
             }
         }
     }
