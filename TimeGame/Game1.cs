@@ -49,11 +49,11 @@ namespace TimeGame
         {
             world = new World(graphics);
             mainGameTime = new GameTimeWrapper(MainUpdate, this, 1.0m);
-            world.AddTime(mainGameTime);
-            world.camera1.focus = Camera.Focus.Center;
-            world.camera1.pan.smoothingActive = true;
-            world.camera1.pan.smoothingType = TweenerBase.SmoothingType.RecursiveLinear;
-            world.camera1.pan.smoothingRate = 0.1f;
+            //world.AddTime(mainGameTime);
+            //world.camera1.focus = Camera.Focus.Center;
+            //world.camera1.pan.smoothingActive = true;
+            //world.camera1.pan.smoothingType = TweenerBase.SmoothingType.RecursiveLinear;
+            //world.camera1.pan.smoothingRate = 0.1f;
 
             DebugText.Initialize(Vector2.Zero, DebugText.Corner.TopLeft, 0);
             base.Initialize();
@@ -130,11 +130,11 @@ namespace TimeGame
             player.Control(gameTime);
 
             enemyHandler.Update(player, gameTime, graphics);
-            player.Update(gameTime, graphics, world.camera1);
+            //player.Update(gameTime, graphics, world.camera1);
 
-            world.camera1.pan.Value = player.pos;
-            world.UpdateCurrentCamera(gameTime);
-            DebugText.pos = new Vector2(world.camera1.pan.Value.X - graphics.GraphicsDevice.Viewport.Width / 2, world.camera1.pan.Value.Y - graphics.GraphicsDevice.Viewport.Height / 2);
+            //world.camera1.pan.Value = player.pos;
+            //world.UpdateCurrentCamera(gameTime);
+            //DebugText.pos = new Vector2(world.camera1.pan.Value.X - graphics.GraphicsDevice.Viewport.Width / 2, world.camera1.pan.Value.Y - graphics.GraphicsDevice.Viewport.Height / 2);
             previousKeyboardState = keyboardState;
             previousMouseState = mouseState;
             previousGamePadState = gamePadState;

@@ -57,6 +57,7 @@ namespace TimeGame
                 bullet.speed = 100;
                 bullet.Fire(pos, rotation);
                 bullets.Add(bullet);
+                bool set = GamePad.SetVibration(PlayerIndex.One, 1, 1);
                 canFire = false;
             }
         }
@@ -65,7 +66,7 @@ namespace TimeGame
         {
             KeyboardState keyboardState = Keyboard.GetState();
             MouseState mouseState = Mouse.GetState();
-            GamePadState gamePadState = GamePad.GetState(PlayerIndex.One);
+            GamePadState gamePadState = GamePad.GetState(PlayerIndex.One, GamePadDeadZone.Circular);
 
             Vector2 currentPos = pos;
             Vector2 futurePos = pos;

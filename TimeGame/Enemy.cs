@@ -22,11 +22,11 @@ namespace TimeGame
         {
             visible = false;
             anger = new ColorTweener();
-            anger.Value = Color.Black;
+            anger.Value = Color.Orange;
             anger.smoothingActive = true;
             anger.smoothingType = TweenerBase.SmoothingType.Linear;
             anger.smoothingRate = 0.05f;
-            color = Color.DarkGreen;
+            color = Color.Orange;
             charging = false;
             chargingTimer = TimeSpan.Zero;
             health = 100;
@@ -102,12 +102,12 @@ namespace TimeGame
                 {
                     chargingTimer -= gameTime.ElapsedGameTime;
                 }
-                anger.Value = Color.DarkGreen;
+                anger.Value = Color.Orange;
             }
 
             if (charging)
             {
-                anger.Value = Color.DarkGreen;
+                anger.Value = Color.Orange;
                 if (vel.X < 0.001f && vel.Y < 0.001f)
                 {
                     vel = Vector2.Zero;

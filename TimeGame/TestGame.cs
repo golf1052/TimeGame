@@ -54,11 +54,21 @@ namespace TimeGame
         {
             world = new World(graphics);
             mainGameTime = new GameTimeWrapper(SecondUpdate, this, 1.0m);
-            world.AddTime(mainGameTime);
-            world.camera1.pan.smoothingActive = true;
-            world.camera1.pan.smoothingType = TweenerBase.SmoothingType.Linear;
-            world.camera1.pan.smoothingRate = 0.05f;
+            world.AddGameState("game1", graphics);
+            world.gameStates["game1"].AddTime(mainGameTime);
+            world.gameStates["game1"].AddDraw(MainDraw);
+            world.gameStates["game1"].camera1.pan.smoothingActive = true;
+            world.gameStates["game1"].camera1.pan.smoothingType = TweenerBase.SmoothingType.Linear;
+            world.gameStates["game1"].camera1.pan.smoothingRate = 0.05f;
+            world.ActivateGameState("game1");
 
+            world.AddMenuState("menu1", graphics, this);
+            world.menuStates["menu1"].unselectedColor = Color.Black;
+            world.menuStates["menu1"].selectedColor = Color.Yellow;
+            world.menuStates["menu1"].initialPosition = new Vector2(100, 300);
+            world.menuStates["menu1"].menuDirection = MenuState.Direction.LeftToRight;
+            world.menuStates["menu1"].spacing = 50;
+            
             base.Initialize();
         }
 
@@ -122,6 +132,11 @@ namespace TimeGame
 
             emitter = new Emitter(graphics);
             emitter.pos = new Vector2(0, graphics.GraphicsDevice.Viewport.Height / 2);
+
+            world.menuStates["menu1"].menuFont = Content.Load<SpriteFont>("DisplayFont");
+            world.menuStates["menu1"].AddMenuItem("Play");
+            world.menuStates["menu1"].AddMenuItem("Help");
+            world.menuStates["menu1"].AddMenuItem("Exit");
         }
 
         /// <summary>
@@ -142,6 +157,16 @@ namespace TimeGame
         {
             KeyboardState keyboardState = Keyboard.GetState();
             GamePadState gamePadState = GamePad.GetState(PlayerIndex.One);
+            if (keyboardState.IsKeyDown(Keys.Q) && previousKeyboardState.IsKeyUp(Keys.Q))
+            {
+                world.ClearStates();
+                world.ActivateGameState("game1");
+            }
+            if (keyboardState.IsKeyDown(Keys.E) && previousKeyboardState.IsKeyUp(Keys.E))
+            {
+                world.ClearStates();
+                world.ActivateMenuState("menu1");
+            }
             if (keyboardState.IsKeyDown(Keys.OemMinus))
             {
                 mainGameTime.GameSpeed -= 0.01m;
@@ -173,61 +198,61 @@ namespace TimeGame
             if (gamePadState.Buttons.LeftStick == ButtonState.Pressed &&
                 previousGamePadState.Buttons.LeftStick == ButtonState.Released)
             {
-                world.camera1.focus = Camera.Focus.TopLeft;
-                world.camera1.pan.Value = Vector2.Zero;
+                world.gameStates["game1"].camera1.focus = Camera.Focus.TopLeft;
+                world.gameStates["game1"].camera1.pan.Value = Vector2.Zero;
                 cameraTarget = CameraTarget.None;
             }
             else if (gamePadState.Buttons.LeftShoulder == ButtonState.Pressed &&
                 previousGamePadState.Buttons.LeftShoulder == ButtonState.Released)
             {
-                world.camera1.focus = Camera.Focus.Center;
-                world.camera1.pan.Value = ida.pos;
+                world.gameStates["game1"].camera1.focus = Camera.Focus.Center;
+                world.gameStates["game1"].camera1.pan.Value = ida.pos;
                 cameraTarget = CameraTarget.Player;
             }
             else if (gamePadState.Buttons.RightShoulder == ButtonState.Pressed &&
                 previousGamePadState.Buttons.RightShoulder == ButtonState.Released)
             {
-                world.camera1.focus = Camera.Focus.Center;
-                world.camera1.pan.Value = ai.pos;
+                world.gameStates["game1"].camera1.focus = Camera.Focus.Center;
+                world.gameStates["game1"].camera1.pan.Value = ai.pos;
                 cameraTarget = CameraTarget.AI;
             }
             else if (gamePadState.Buttons.X == ButtonState.Pressed &&
                 previousGamePadState.Buttons.X == ButtonState.Released)
             {
-                world.camera1.focus = Camera.Focus.Center;
-                world.camera1.pan.Value = Vector2.Zero;
+                world.gameStates["game1"].camera1.focus = Camera.Focus.Center;
+                world.gameStates["game1"].camera1.pan.Value = Vector2.Zero;
                 cameraTarget = CameraTarget.None;
             }
             else if (gamePadState.Buttons.Y == ButtonState.Pressed &&
                 previousGamePadState.Buttons.Y == ButtonState.Released)
             {
-                world.camera1.focus = Camera.Focus.Center;
-                world.camera1.pan.Value = new Vector2(graphics.GraphicsDevice.Viewport.Width, 0);
+                world.gameStates["game1"].camera1.focus = Camera.Focus.Center;
+                world.gameStates["game1"].camera1.pan.Value = new Vector2(graphics.GraphicsDevice.Viewport.Width, 0);
                 cameraTarget = CameraTarget.None;
             }
             else if (gamePadState.Buttons.B == ButtonState.Pressed &&
                 previousGamePadState.Buttons.B == ButtonState.Released)
             {
-                world.camera1.focus = Camera.Focus.Center;
-                world.camera1.pan.Value = new Vector2(graphics.GraphicsDevice.Viewport.Width,
+                world.gameStates["game1"].camera1.focus = Camera.Focus.Center;
+                world.gameStates["game1"].camera1.pan.Value = new Vector2(graphics.GraphicsDevice.Viewport.Width,
                     graphics.GraphicsDevice.Viewport.Height);
                 cameraTarget = CameraTarget.None;
             }
             else if (gamePadState.Buttons.A == ButtonState.Pressed &&
                 previousGamePadState.Buttons.A == ButtonState.Released)
             {
-                world.camera1.focus = Camera.Focus.Center;
-                world.camera1.pan.Value = new Vector2(0, graphics.GraphicsDevice.Viewport.Height);
+                world.gameStates["game1"].camera1.focus = Camera.Focus.Center;
+                world.gameStates["game1"].camera1.pan.Value = new Vector2(0, graphics.GraphicsDevice.Viewport.Height);
                 cameraTarget = CameraTarget.None;
             }
 
             if (cameraTarget == CameraTarget.AI)
             {
-                world.camera1.pan.Value = ai.pos;
+                world.gameStates["game1"].camera1.pan.Value = ai.pos;
             }
             else if (cameraTarget == CameraTarget.Player)
             {
-                world.camera1.pan.Value = ida.pos;
+                world.gameStates["game1"].camera1.pan.Value = ida.pos;
             }
 
             world.Update(gameTime);
@@ -324,7 +349,7 @@ namespace TimeGame
             ai.Update(gameTime, graphics);
             line.Aim(gamePadState, SpriteBase.ThumbStick.Right);
             //gameSpeedText.Update(gameTime, graphics.GraphicsDevice);
-            world.UpdateCurrentCamera(gameTime);
+            world.gameStates["game1"].UpdateCurrentCamera(gameTime);
             previousKeyboardState = keyboardState;
             base.Update(gameTime);
         }
@@ -337,6 +362,13 @@ namespace TimeGame
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
+            world.DrawWorld();
+
+            base.Draw(gameTime);
+        }
+
+        void MainDraw()
+        {
             world.BeginDraw();
             world.Draw(pixel.DrawRect);
             world.Draw(ai.Draw);
@@ -344,20 +376,6 @@ namespace TimeGame
             world.Draw(gameSpeedText.Draw);
             world.Draw(emitter.Draw);
             world.EndDraw();
-
-            //spriteBatch.Begin();
-            //world.Draw(pixel.DrawRect);
-            //pixel.DrawRect(spriteBatch);
-            //ai.Draw(spriteBatch);
-            //ida.Draw(spriteBatch);
-            //gameSpeedText.Draw(spriteBatch);
-            ////line.Draw(spriteBatch);
-            ////square.Draw(spriteBatch);
-            ////poly.Draw(spriteBatch);
-            //emitter.Draw(spriteBatch);
-            //spriteBatch.End();
-
-            base.Draw(gameTime);
         }
     }
 }
