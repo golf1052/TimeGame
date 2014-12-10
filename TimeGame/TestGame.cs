@@ -4,6 +4,7 @@ using GLX;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Audio;
 
 namespace TimeGame
 {
@@ -100,16 +101,23 @@ namespace TimeGame
             ida.animations.SetFrameAction("slash3", 14, ida.SetGround);
             ida.animations.SetReverseFrameAction("slash3", 0, ida.SetGround);
             ida.animations.SetFrameAction("slash3", 14, ida.SetSlashMeter);
+            ida.animations.SetFrameAction("run", 2, ida.PlayStep);
+            ida.animations.SetFrameAction("run", 7, ida.PlayStep);
             ida.Ready(graphics);
             ida.animations.currentAnimation = "idle";
             ida.pos = new Vector2(300, 350);
+            ida.footStepSound = Content.Load<SoundEffect>("step");
 
             ai = new PlayerAI(new SpriteSheetInfo(160, 120), mainGameTime);
             ai.animations["idle"] = ida.animations.AddSpriteSheet(Content.Load<Texture2D>("stand"), 8, 100, true);
             ai.animations["run"] = ida.animations.AddSpriteSheet(Content.Load<Texture2D>("run"), 10, 100, true);
+            ai.animations.SetFrameAction("run", 2, ai.PlayStep);
+            ai.animations.SetFrameAction("run", 2, ai.PlayStep);
             ai.Ready(graphics);
             ai.animations.currentAnimation = "idle";
             ai.pos = new Vector2(100, 350);
+            ai.footStepSound = Content.Load<SoundEffect>("step");
+            SoundEffect.DistanceScale = 100f;
 
             square = new Sprite(Content.Load<Texture2D>("square"));
             square.pos = new Vector2(400, 100);
@@ -347,6 +355,7 @@ namespace TimeGame
             emitter.Update(gameTime);
             ida.Update(gameTime, graphics);
             ai.Update(gameTime, graphics);
+            ai.footStepSoundInstance.Apply3D(ida.audioListener, ai.audioEmitter);
             line.Aim(gamePadState, SpriteBase.ThumbStick.Right);
             //gameSpeedText.Update(gameTime, graphics.GraphicsDevice);
             world.gameStates["game1"].UpdateCurrentCamera(gameTime);

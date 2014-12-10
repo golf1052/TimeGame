@@ -6,6 +6,7 @@ using System.Text;
 using GLX;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Audio;
 
 namespace TimeGame
 {
@@ -32,6 +33,22 @@ namespace TimeGame
         bool hitApex;
         public int slashMeter;
         public TimeSpan slashTime;
+        private SoundEffect _footStepSound;
+        public SoundEffect footStepSound
+        {
+            get
+            {
+                return _footStepSound;
+            }
+            set
+            {
+                _footStepSound = value;
+                footStepSoundInstance = _footStepSound.CreateInstance();
+            }
+        }
+        public SoundEffectInstance footStepSoundInstance;
+        public AudioListener audioListener;
+        public AudioEmitter audioEmitter;
 
         public OtherPlayer(Texture2D loadedTex) : base(loadedTex)
         {
@@ -50,6 +67,13 @@ namespace TimeGame
             this.alive = true;
             this.slashMeter = 0;
             SetSlashTime();
+            audioEmitter = new AudioEmitter();
+            audioListener = new AudioListener();
+        }
+
+        public void PlayStep()
+        {
+            footStepSoundInstance.Play();
         }
 
         public void StartJump()
@@ -117,7 +141,8 @@ namespace TimeGame
                     //animations.currentAnimation = "idle";
                 }
             }
-
+            audioListener.Position = pos.ToVector3();
+            audioEmitter.Position = pos.ToVector3();
             base.Update(gameTime, graphics);
         }
 
