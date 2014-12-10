@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using GLX;
+using Microsoft.Xna.Framework.Audio;
 
 namespace TimeGame
 {
@@ -17,6 +18,9 @@ namespace TimeGame
         int damage;
 
         Particle[] particles;
+
+        public AudioEmitter audioEmitter;
+        public Sound bulletImpactSound;
 
         public Enemy(Texture2D loadedTex, GraphicsDeviceManager graphics) : base(loadedTex)
         {
@@ -36,6 +40,7 @@ namespace TimeGame
             {
                 particles[i] = new Particle(graphics);
             }
+            audioEmitter = new AudioEmitter();
         }
 
         public void Update(Player player, GameTimeWrapper gameTime, GraphicsDeviceManager graphics)
@@ -49,6 +54,9 @@ namespace TimeGame
                         if (rect.ContainsLine(bullet))
                         {
                             bullet.shouldBeDead = true;
+                            audioEmitter.Position = pos.ToVector3();
+                            //bulletImpactSound.instance.Apply3D(player.audioListener, audioEmitter);
+                            bulletImpactSound.instance.Play();
                             damage++;
                             Splatter(player);
                             Vector2 bulletForce = Vector2.Normalize(new Vector2(player.pos.X - pos.X, player.pos.Y - pos.Y));

@@ -4,6 +4,7 @@ using GLX;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Audio;
 
 namespace TimeGame
 {
@@ -23,6 +24,9 @@ namespace TimeGame
         KeyboardState previousKeyboardState;
         GamePadState previousGamePadState;
         MouseState previousMouseState;
+
+        public AudioListener audioListener;
+        public Sound gunShotSound;
 
         public enum ControlScheme
         {
@@ -47,6 +51,7 @@ namespace TimeGame
             previousKeyboardState = Keyboard.GetState();
             previousGamePadState = GamePad.GetState(PlayerIndex.One);
             previousMouseState = Mouse.GetState();
+            audioListener = new AudioListener();
         }
 
         public void Fire()
@@ -58,11 +63,12 @@ namespace TimeGame
                 bullet.Fire(pos, rotation);
                 bullets.Add(bullet);
                 bool set = GamePad.SetVibration(PlayerIndex.One, 1, 1);
+                gunShotSound.Play();
                 canFire = false;
             }
         }
 
-        public void Control(GameTimeWrapper gameTime)
+        public void Control(GameTimeWrapper gameTime, Camera camera)
         {
             KeyboardState keyboardState = Keyboard.GetState();
             MouseState mouseState = Mouse.GetState();
@@ -97,6 +103,11 @@ namespace TimeGame
                 if (keyboardState.IsKeyDown(Keys.D))
                 {
                     futurePos.X += 5.0f * (float)gameTime.GameSpeed;
+                }
+                Aim(mouseState, camera);
+                if (mouseState.LeftButton == ButtonState.Pressed)
+                {
+                    Fire();
                 }
             }
             else if (controlScheme == ControlScheme.GamePad)
@@ -139,6 +150,7 @@ namespace TimeGame
                     bullet.Update(gameTime);
                 }
             }
+            audioListener.Position = pos.ToVector3();
             base.Update(gameTime, graphics);
         }
 

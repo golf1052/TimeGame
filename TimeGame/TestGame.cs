@@ -117,7 +117,7 @@ namespace TimeGame
             ai.animations.currentAnimation = "idle";
             ai.pos = new Vector2(100, 350);
             ai.footStepSound = Content.Load<SoundEffect>("step");
-            SoundEffect.DistanceScale = 100f;
+            SoundEffect.DistanceScale = 1000f;
 
             square = new Sprite(Content.Load<Texture2D>("square"));
             square.pos = new Vector2(400, 100);

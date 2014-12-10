@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using GLX;
+using Microsoft.Xna.Framework.Audio;
 
 namespace TimeGame
 {
@@ -12,12 +13,13 @@ namespace TimeGame
     {
         public List<Enemy> enemies;
 
-        public EnemyHandler(Texture2D enemyTex, GraphicsDeviceManager graphics)
+        public EnemyHandler(Texture2D enemyTex, SoundEffect bulletImpactSound, GraphicsDeviceManager graphics)
         {
             enemies = new List<Enemy>();
             for (int i = 0; i < 25; i++)
             {
                 enemies.Add(new Enemy(enemyTex, graphics));
+                enemies[i].bulletImpactSound = new Sound(bulletImpactSound);
             }
         }
 
