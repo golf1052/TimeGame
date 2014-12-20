@@ -12,10 +12,8 @@ namespace TimeGame
     {
         public bool alive;
         public List<Bullet> bullets;
-        TimeSpan timeBetweenShots;
-        bool canFire;
 
-        GraphicsDeviceManager graphics;
+        internal GraphicsDeviceManager graphics;
 
         int shotDelay = 120;
 
@@ -27,6 +25,8 @@ namespace TimeGame
 
         public AudioListener audioListener;
         public Sound gunShotSound;
+
+        Weapon weapon = new SMG();
 
         public enum ControlScheme
         {
@@ -43,8 +43,6 @@ namespace TimeGame
 
             alive = true;
             bullets = new List<Bullet>();
-            timeBetweenShots = TimeSpan.FromMilliseconds(shotDelay);
-            canFire = true;
 
             controlScheme = ControlScheme.GamePad;
 
@@ -52,20 +50,6 @@ namespace TimeGame
             previousGamePadState = GamePad.GetState(PlayerIndex.One);
             previousMouseState = Mouse.GetState();
             audioListener = new AudioListener();
-        }
-
-        public void Fire()
-        {
-            if (canFire)
-            {
-                Bullet bullet = new Bullet(graphics);
-                bullet.speed = 100;
-                bullet.Fire(pos, rotation);
-                bullets.Add(bullet);
-                bool set = GamePad.SetVibration(PlayerIndex.One, 1, 1);
-                gunShotSound.Play();
-                canFire = false;
-            }
         }
 
         public void Control(GameTimeWrapper gameTime, Camera camera)
@@ -105,18 +89,40 @@ namespace TimeGame
                     futurePos.X += 5.0f * (float)gameTime.GameSpeed;
                 }
                 Aim(mouseState, camera);
-                if (mouseState.LeftButton == ButtonState.Pressed)
+                if (weapon.fireType == Weapon.FireType.Semi)
                 {
-                    Fire();
+                    if (mouseState.LeftButton == ButtonState.Pressed &&
+                        previousMouseState.LeftButton == ButtonState.Released)
+                    {
+                        weapon.Fire(this);
+                    }
+                }
+                else if (weapon.fireType == Weapon.FireType.Auto)
+                {
+                    if (mouseState.LeftButton == ButtonState.Pressed)
+                    {
+                        weapon.Fire(this);
+                    }
                 }
             }
             else if (controlScheme == ControlScheme.GamePad)
             {
                 futurePos.X += gamePadState.ThumbSticks.Left.X * (5.0f * (float)gameTime.GameSpeed);
                 futurePos.Y -= gamePadState.ThumbSticks.Left.Y * (5.0f * (float)gameTime.GameSpeed);
-                if (gamePadState.Triggers.Right > 0.5f)
+                if (weapon.fireType == Weapon.FireType.Semi)
                 {
-                    Fire();
+                    if (gamePadState.Triggers.Right >= 0.5f &&
+                        previousGamePadState.Triggers.Right < 0.5f)
+                    {
+                        weapon.Fire(this);
+                    }
+                }
+                else if (weapon.fireType == Weapon.FireType.Auto)
+                {
+                    if (gamePadState.Triggers.Right >= 0.5f)
+                    {
+                        weapon.Fire(this);
+                    }
                 }
             }
             pos = futurePos;
@@ -124,19 +130,14 @@ namespace TimeGame
 
             bool intersection = false;
             debugLines.Clear();
+            previousKeyboardState = keyboardState;
+            previousMouseState = mouseState;
+            previousGamePadState = gamePadState;
         }
 
         public void Update(GameTimeWrapper gameTime, GraphicsDeviceManager graphics, Camera camera)
         {
-            if (!canFire)
-            {
-                timeBetweenShots -= gameTime.ElapsedGameTime;
-                if (timeBetweenShots <= TimeSpan.Zero)
-                {
-                    canFire = true;
-                    timeBetweenShots = TimeSpan.FromMilliseconds(shotDelay);
-                }
-            }
+            weapon.Update(gameTime);
             foreach (Bullet bullet in bullets)
             {
                 if (bullet.visible)

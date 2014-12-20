@@ -125,7 +125,10 @@ namespace TimeGame
             }
             anger.Update(gameTime);
             color = anger.Value;
-            vel *= 0.80f;
+            Vector2 tempVel = vel * 0.80f;
+            Vector2 differenceVel = vel - tempVel;
+            Vector2 gsDifference = differenceVel * (float)gameTime.GameSpeed;
+            vel -= gsDifference;
             foreach (Particle particle in particles)
             {
                 particle.Update(gameTime, graphics);
