@@ -81,7 +81,6 @@ namespace TimeGame
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            world.LoadSpriteBatch();
 
             ida = new OtherPlayer(new SpriteSheetInfo(160, 120), mainGameTime);
             ida.animations["idle"] = ida.animations.AddSpriteSheet(Content.Load<Texture2D>("stand"), 8, 100, true);

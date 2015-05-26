@@ -115,7 +115,6 @@ namespace TimeGame
                 this.Exit();
             });
 
-            world.LoadSpriteBatch();
             player = new Player(Content.Load<Texture2D>("testguy"), graphics);
             player.pos = new Vector2(graphics.GraphicsDevice.Viewport.Width / 2, graphics.GraphicsDevice.Viewport.Height / 2);
             player.gunShotSound = new Sound(Content.Load<SoundEffect>("gunshot"));

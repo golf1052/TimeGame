@@ -107,10 +107,6 @@
       <Project>{9c9d3584-f3dc-4364-953c-f529c15806c4}</Project>
       <Name>GLX</Name>
     </ProjectReference>
-    <ProjectReference Include="..\TimeGameContent\TimeGameContent\TimeGameContent.csproj">
-      <Project>{e2ba561d-2860-4fad-a957-eeb72baaf570}</Project>
-      <Name>TimeGameContent</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
